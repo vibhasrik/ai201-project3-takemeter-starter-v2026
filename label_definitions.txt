@@ -5,6 +5,7 @@
 #
 # Delete the examples below and put yours in.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+call_to_action: Names a specific action the reader can take to support the cause, with a concrete target. Examples: a petition to sign, a fundraiser to donate to, a volunteer role to apply for, an event or protest to join. General pleas like “please wake up” or “everyone should watch Earthlings” don’t count, and neither does “follow us on social.”
+asking_for_advice: Asks the reader for help with the poster’s own situation: a recommendation, what to do, or where to go. It usually includes “advice,” “recommend,” “any tips,” “should I,” or a question aimed at the reader.
+open_discussion: Asks the community a general question, or puts forward an idea for others to weigh in on. There’s no single right answer, and the replies don’t solve the poster’s own problem. Examples: “first law you’d pass,” “where’s your line?”, “anyone else hate animals but not enough to kill them?”
+personal_story: Shares an experience, perspective, rant, or argument without asking the reader for help or pushing a specific action. This is the catch-all label.

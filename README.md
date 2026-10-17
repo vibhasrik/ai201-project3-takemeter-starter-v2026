@@ -160,15 +160,29 @@ Labeled 20 cold, then prelabelled the rest with AI. Read through them and correc
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
-**Base model:**
+**Base model:** `distilbert-base-uncased`
 
 **Settings:** <!-- epochs, learning rate, batch size, seed -->
+3 epochs, learning rate 2e-5, batch size 16, max length 128
+tokens, seed 42 (plus 7 and 2024 for the three-seed run). Trained on Apple
+Silicon GPU (MPS), torch 2.14.1.
 
-**Anything I changed from the defaults, and why:**
+**Anything I changed from the defaults, and why:** Nothing.
 
 **Split sizes:** <!-- train / val / test, and per-label counts in the test
 split. If a label had fewer than about 8 in test, say so — it explains a lot
 of next unit's variance. -->
+
+200 labelled posts, stratified 70/15/15 → train 139 / val 31 /
+test 30. Test split per label: `personal_story` 13, `asking_for_advice` 11,
+`open_discussion` 3, `call_to_action` 3. The split was identical for all
+three seeds.
+
+`open_discussion` and `call_to_action` have only 3 test posts each, well
+under 8. One right or wrong guess moves their F1 by about a third, so expect
+big swings on those two labels next unit. They're also my thinnest labels
+overall (20 and 17 of 200 posts), which likely explains the low macro F1
+(0.25 on seed 42) next to 0.50 accuracy.
 
 ---
 
@@ -189,11 +203,11 @@ of next unit's variance. -->
 
 **Moment 2**
 
-- _What I asked for:_
-- _What came back:_
-- _What I changed:_
+- _What I asked for:_ I asked for help with a kernel issue in my takemeter.ipynb.
+- _What came back:_ It helped me refresh my Vscode so the venv for this project showed up in the possible kernels to choose from for the takemeter.ipynb notebook.
+- _What I changed:_ I didn't really change anything, I just followed the instructions.
 
-**Pre-labelling disclosure:**
+**Pre-labelling disclosure:** Labeled 20 myself and then used AI to prelabel and then check the rest of the 200.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
