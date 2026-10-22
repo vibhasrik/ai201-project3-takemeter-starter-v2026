@@ -221,17 +221,21 @@ overall (20 and 17 of 200 posts), which likely explains the low macro F1
 <!-- Both models on the same posts. `python baseline.py --trained results.json`
      prints this table for you. -->
 
-| Measure          | Baseline | Trained | Difference |
-| ---------------- | -------- | ------- | ---------- |
-| Overall accuracy |          |         |            |
-| Macro F1         |          |         |            |
-| F1 — `label_one` |          |         |            |
-| F1 — `label_two` |          |         |            |
+| Measure                  | Baseline | Trained | Difference |
+| ------------------------ | -------- | ------- | ---------- |
+| Overall accuracy         | 0.833    |         |            |
+| Macro F1                 | 0.657    |         |            |
+| F1 — `asking_for_advice` | 1.000    |         |            |
+| F1 — `call_to_action`    | 0.800    |         |            |
+| F1 - `open_discussion`   | 0.000    |         |            |
+| F1 - `personal_story`    | 0.828    |         |            |
 
 **What I predicted before I looked:**
 
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
+
+I predict that after training, my overall accuracy will increase to more than 90%. I hope it will reach 93%
 
 **What the gap actually means:**
 
