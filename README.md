@@ -249,26 +249,32 @@ I predict that after training, my overall accuracy will increase to more than 90
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
-| Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
-| --------- | ------ | ------- | ------ | --------- | ------- |
-| 1.        |        |         |        |           |         |
-| 2.        |        |         |        |           |         |
-| 3.        |        |         |        |           |         |
-| 4.        |        |         |        |           |         |
-| 5.        |        |         |        |           |         |
+| Criterion                                                   | Target            | Seed 42                                | Seed 7                                 | Seed 2024                              | Verdict                                            |
+| ----------------------------------------------------------- | ----------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------------------- |
+| 1. Overall accuracy                                         | ≥ 0.65            | 0.500                                  | 0.433                                  | 0.433                                  | Miss                                               |
+| 2. F1 `asking_for_advice` / `personal_story`                | each ≥ 0.60       | 0.375 / 0.632                          | 0.000 / 0.605                          | 0.000 / 0.605                          | Miss (`asking_for_advice` fails all three seeds)   |
+| 3. `call_to_action` recall                                  | ≥ 0.50            | 0.00 (0/3)                             | 0.00 (0/3)                             | 0.00 (0/3)                             | Miss                                               |
+| 4. Confidence ≥ 0.7 is ≥ 80% correct, on ≥ ⅓ of predictions | ≥ 0.80 on ≥ 10/30 | mean top conf 0.42; top-third acc 0.70 | mean top conf 0.42; top-third acc 0.50 | mean top conf 0.42; top-third acc 0.40 | Miss (top-third accuracy below 0.80 on every seed) |
+| 5. Agreement with staff labels                              | ≥ 75%             | —                                      | —                                      | —                                      | ⏳ Pending (`agreement.py` not run yet)            |
 
 ### Confusion matrix
 
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |     |     |     |
-| ---------------- | --- | --- | --- |
-| \*\*\*\*         |     |     |     |
-| \*\*\*\*         |     |     |     |
-| \*\*\*\*         |     |     |     |
+| true \ predicted      | call_to_action | asking_for_advice | open_discussion | personal_story |
+| --------------------- | -------------- | ----------------- | --------------- | -------------- |
+| **call_to_action**    | 0              | 1                 | 0               | 2              |
+| **asking_for_advice** | 0              | 3                 | 0               | 8              |
+| **open_discussion**   | 0              | 0                 | 0               | 3              |
+| **personal_story**    | 0              | 1                 | 0               | 12             |
 
 **My biggest off-diagonal number, and what it means:**
+Biggest confusion: 8 real `asking_for_advice` posts called `personal_story`.
+The other direction: 1 real `personal_story` posts called `asking_for_advice`.
+
+That's lopsided — the model leans toward `personal_story` on this pair.
+A direction like that usually points at your labelling rather than the model.
 
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the

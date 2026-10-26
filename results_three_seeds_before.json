@@ -126,8 +126,8 @@
       }
     },
     "confidence": {
-      "mean_when_right": 0.4231867492198944,
-      "mean_when_wrong": 0.4161472022533417,
+      "mean_when_right": 0.4231988489627838,
+      "mean_when_wrong": 0.41615843772888184,
       "accuracy_most_confident_third": 0.5,
       "accuracy_least_confident_third": 0.3,
       "n_per_third": 10
@@ -195,7 +195,7 @@
       }
     },
     "confidence": {
-      "mean_when_right": 0.42015621066093445,
+      "mean_when_right": 0.4201562702655792,
       "mean_when_wrong": 0.42134207487106323,
       "accuracy_most_confident_third": 0.4,
       "accuracy_least_confident_third": 0.4,
