@@ -397,10 +397,18 @@ It still missed every criterion it missed before. Criterion 2 now fails only bec
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
 
+**1. Overall accuracy (0.633 / 0.567 / 0.567, target 0.65).** Most of the remaining errors are the 6 `call_to_action` and `open_discussion` test posts, which the model never gets right. Fixing those two labels (see 3) is the most likely way to gain the 3 or so posts each seed still needs. I stopped because the unit allows one change, and I'd already used it on epochs.
+
+**2. `asking_for_advice` / `personal_story` F1 (`personal_story` 0.581 on seed 2024).** After 10 epochs the model overcorrected and called 4 real story posts advice. Next I'd reread those posts against my decision rule to see whether they ask the reader for something. If they do, the labels are wrong; if they don't, the model is keying on question marks. I'd also try 6–7 epochs, since seed 2024's validation accuracy peaked at epoch 6. I stopped for the same one-change reason.
+
+**3. `call_to_action` recall (0 / 0 / 0).** This needs more data, not more training. With 11 training examples, 8 from one template, there isn't enough for the model to learn the label. I'd collect and label 30 more calls to action from different accounts. I stopped because that's a whole labelling batch and the unit allows only one change.
+
+**4. Confident predictions (most-confident third 0.80 / 0.80 / 0.60).** This should follow from 1–3: the confident wrong calls are mostly calls to action and discussions forced into the two big labels. I'd also save each prediction's confidence, so I could check the ≥ 0.7 bar directly and not infer it from thirds. I stopped because the notebook doesn't record per-prediction confidence and changing the evaluation code was outside the one change.
+
 **The gap between what I meant my labels to capture and what the model
 learned:**
 
-<!-- Two sentences. Your confusion matrix is the evidence. -->
+I meant my labels to capture what a post is *for*: sharing an experience, asking for help, putting an idea up for debate, or getting people to act, but the model learned only my two biggest labels. In the after run (seed 42) it gets 10 of 11 advice posts and 9 of 13 stories right, but sends all 3 `open_discussion` posts and 2 of 3 `call_to_action` posts to `personal_story`, so for it, "a post with personal background" means a story, whatever the post is asking for.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
