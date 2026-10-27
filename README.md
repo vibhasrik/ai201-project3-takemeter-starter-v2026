@@ -249,13 +249,13 @@ I predict that after training, my overall accuracy will increase to more than 90
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
-| Criterion                                                   | Target            | Seed 42                                | Seed 7                                 | Seed 2024                              | Verdict                                            |
-| ----------------------------------------------------------- | ----------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------------------- |
-| 1. Overall accuracy                                         | ≥ 0.65            | 0.500                                  | 0.433                                  | 0.433                                  | Miss                                               |
-| 2. F1 `asking_for_advice` / `personal_story`                | each ≥ 0.60       | 0.375 / 0.632                          | 0.000 / 0.605                          | 0.000 / 0.605                          | Miss (`asking_for_advice` fails all three seeds)   |
-| 3. `call_to_action` recall                                  | ≥ 0.50            | 0.00 (0/3)                             | 0.00 (0/3)                             | 0.00 (0/3)                             | Miss                                               |
-| 4. Confidence ≥ 0.7 is ≥ 80% correct, on ≥ ⅓ of predictions | ≥ 0.80 on ≥ 10/30 | mean top conf 0.42; top-third acc 0.70 | mean top conf 0.42; top-third acc 0.50 | mean top conf 0.42; top-third acc 0.40 | Miss (top-third accuracy below 0.80 on every seed) |
-| 5. Agreement with staff labels                              | ≥ 75%             | —                                      | —                                      | —                                      | ⏳ Pending (`agreement.py` not run yet)            |
+| Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.500 | 0.433 | 0.433 | MISSED |
+| 2. F1 `asking_for_advice` / `personal_story` | each ≥ 0.60 | 0.375 / 0.632 | 0.000 / 0.605 | 0.000 / 0.605 | MISSED |
+| 3. `call_to_action` recall | ≥ 0.50 | 0.00 | 0.00 | 0.00 | MISSED |
+| 4. Confident predictions (≥ 0.7) correct, on ≥ ⅓ of test | ≥ 0.80 on ≥ 10/30 | top-third acc 0.70 (mean conf 0.42) | top-third acc 0.50 (mean conf 0.42) | top-third acc 0.40 (mean conf 0.42) | MISSED |
+| 5. Agreement with staff labels | ≥ 75% | 97% | 97% | 97% | MET |
 
 ### Confusion matrix
 
@@ -289,11 +289,11 @@ A direction like that usually points at your labelling rather than the model.
 
 | #   | Criterion | Target | Verdict | How I decided |
 | --- | --------- | ------ | ------- | ------------- |
-| 1   |           |        |         |               |
-| 2   |           |        |         |               |
-| 3   |           |        |         |               |
-| 4   |           |        |         |               |
-| 5   |           |        |         |               |
+| 1   | Overall accuracy | ≥ 0.65 | MISSED | Best seed was 0.500; all three below target |
+| 2   | F1 `asking_for_advice` and `personal_story` | each ≥ 0.60 | MISSED | `personal_story` passed on all seeds (0.605–0.632), but `asking_for_advice` was 0.375, 0.000, 0.000 |
+| 3   | `call_to_action` recall | ≥ 0.50 | MISSED | 0 of 3 caught on every seed |
+| 4   | Confident predictions ≥ 80% correct, on ≥ ⅓ of test | ≥ 0.80 on ≥ 10/30 | MISSED | The 10 most confident predictions were only 0.70 / 0.50 / 0.40 correct, below 0.80 on every seed, and mean top-label confidence was just 0.42. Per-prediction confidences weren't saved, so I couldn't count exactly how many cleared 0.7; the verdict is inferred from these summaries |
+| 5   | Agreement with staff labels | ≥ 75% | MET | 29 / 30 = 97% from `agreement.py`; one run, not seed-dependent |
 
 **Diagnoses**
 
@@ -305,6 +305,18 @@ A direction like that usually points at your labelling rather than the model.
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
+
+**1. Overall accuracy — cause: too few training examples for the model to get past the majority label.**
+Seeds 7 and 2024 predicted `personal_story` for all 30 test posts, so their 0.433 is exactly the majority share (13/30). Seed 42 only escaped that a little. Training loss ended around 1.20, barely under the 1.39 of random guessing across four labels, and validation accuracy stayed flat at 0.42–0.48 across all three epochs. It isn't my labelling: I matched staff on 97% of their posts applying their written rules, and the zero-shot baseline (no training at all) reached the same 0.50 accuracy.
+
+**2. `asking_for_advice` F1 — cause: too few examples, not an inconsistent boundary.**
+The confusion matrix is lopsided (8 advice posts called `personal_story`, only 1 the other way), which can point at labelling. Two things say it doesn't here. First, the zero-shot baseline scored 0.92 F1 on `asking_for_advice` using my labels, so these posts are clearly separable from their text. Second, my 97% agreement shows I apply written definitions consistently. The fine-tuned model just never learned to predict anything but `personal_story` on two of three seeds. My one staff-set disagreement was a copy-paste slip, so it's still worth rereading those 8 posts for the same kind of mislabel.
+
+**3. `call_to_action` recall — cause: too few examples for the label.**
+Only 17 of 200 posts (11 in training, 3 in test), and 8 of the 17 come from one account's template. The model predicted `call_to_action` zero times on every seed. With 3 test posts, each one is worth 33 points of recall, so this was always going to be the jumpiest score.
+
+**4. Confidence — cause: the same as 1.**
+A model that hasn't learned to separate the labels can't be confident. Its mean top-label confidence was 0.42 whether it was right or wrong (0.416 vs 0.409 on seed 42), so confidence carried no information about correctness. This miss follows from the first, not from a separate problem.
 
 ---
 
