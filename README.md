@@ -306,11 +306,11 @@ A direction like that usually points at your labelling rather than the model.
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
 
-**1. Overall accuracy — cause: too few training examples for the model to get past the majority label.**
-Seeds 7 and 2024 predicted `personal_story` for all 30 test posts, so their 0.433 is exactly the majority share (13/30). Seed 42 only escaped that a little. Training loss ended around 1.20, barely under the 1.39 of random guessing across four labels, and validation accuracy stayed flat at 0.42–0.48 across all three epochs. It isn't my labelling: I matched staff on 97% of their posts applying their written rules, and the zero-shot baseline (no training at all) reached the same 0.50 accuracy.
+**1. Overall accuracy — cause: the model was undertrained and never got past the majority label.**
+Seeds 7 and 2024 predicted `personal_story` for all 30 test posts, so their 0.433 is exactly the majority share (13/30). Seed 42 only escaped that a little. With 139 training posts at batch size 16, three epochs is only 27 optimizer steps. Training loss ended around 1.20, barely under the 1.39 of random guessing across four labels, and validation accuracy stayed flat at 0.42–0.48 across all three epochs. It isn't my labelling: I matched staff on 97% of their posts applying their written rules, and the zero-shot baseline (no training at all) reached the same 0.50 accuracy.
 
-**2. `asking_for_advice` F1 — cause: too few examples, not an inconsistent boundary.**
-The confusion matrix is lopsided (8 advice posts called `personal_story`, only 1 the other way), which can point at labelling. Two things say it doesn't here. First, the zero-shot baseline scored 0.92 F1 on `asking_for_advice` using my labels, so these posts are clearly separable from their text. Second, my 97% agreement shows I apply written definitions consistently. The fine-tuned model just never learned to predict anything but `personal_story` on two of three seeds. My one staff-set disagreement was a copy-paste slip, so it's still worth rereading those 8 posts for the same kind of mislabel.
+**2. `asking_for_advice` F1 — cause: undertraining, not an inconsistent boundary.**
+The confusion matrix is lopsided (8 advice posts called `personal_story`, only 1 the other way), which can point at labelling. Two things say it doesn't here. First, the zero-shot baseline scored 0.92 F1 on `asking_for_advice` using my labels, so these posts are clearly separable from their text. Second, my 97% agreement shows I apply written definitions consistently. With 74 examples this label isn't thin; the fine-tuned model just never trained long enough to predict anything but `personal_story` on two of three seeds. My one staff-set disagreement was a copy-paste slip, so it's still worth rereading those 8 posts for the same kind of mislabel.
 
 **3. `call_to_action` recall — cause: too few examples for the label.**
 Only 17 of 200 posts (11 in training, 3 in test), and 8 of the 17 come from one account's template. The model predicted `call_to_action` zero times on every seed. With 3 test posts, each one is worth 33 points of recall, so this was always going to be the jumpiest score.
@@ -368,21 +368,25 @@ My only disagreement wasn't a misreading of the rules. It was a copy-paste slip.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** `EPOCHS` from 3 to 10 in the notebook. Nothing else: same data, same learning rate (2e-5), batch size (16), max length (128) and seeds (42, 7, 2024).
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** Diagnoses 1 and 2. Three epochs was only 27 optimizer steps, training loss ended at 1.20 (random guessing is 1.39), and two of three seeds predicted `personal_story` for every post. Meanwhile the zero-shot baseline got 0.92 F1 on `asking_for_advice` from the same text, so the signal was there and the model hadn't trained long enough to find it. My 97% staff agreement argued against relabelling, and adding examples wouldn't help a label like `asking_for_advice` that already had 74.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
-| --------- | ------ | ------- | ------ | --------- | ------- |
-| 1.        |        |         |        |           |         |
-| 2.        |        |         |        |           |         |
-| 3.        |        |         |        |           |         |
-| 4.        |        |         |        |           |         |
-| 5.        |        |         |        |           |         |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.633 | 0.567 | 0.567 | MISSED |
+| 2. F1 `asking_for_advice` / `personal_story` | each ≥ 0.60 | 0.769 / 0.643 | 0.636 / 0.625 | 0.696 / 0.581 | MISSED |
+| 3. `call_to_action` recall | ≥ 0.50 | 0.00 | 0.00 | 0.00 | MISSED |
+| 4. Confident predictions (≥ 0.7) correct, on ≥ ⅓ of test | ≥ 0.80 on ≥ 10/30 | top-third acc 0.80 | top-third acc 0.80 | top-third acc 0.60 | MISSED |
+| 5. Agreement with staff labels | ≥ 75% | 97% | 97% | 97% | MET |
 
 **Did it help, and how do I know:**
+
+Yes, but not enough to flip any verdict. Every seed improved: accuracy went from 0.500 / 0.433 / 0.433 to 0.633 / 0.567 / 0.567, and macro F1 from 0.252 / 0.151 / 0.151 to 0.353 / 0.315 / 0.319. The biggest change was `asking_for_advice`, which went from 0.375 / 0.000 / 0.000 to 0.769 / 0.636 / 0.696, now above 0.60 on all three seeds. The model stopped guessing `personal_story` for everything: on seed 42 it went from catching 3 of 11 advice posts to 10 of 11. The last logged training loss was about 0.71, down from about 1.17. That confirms diagnoses 1 and 2: the model was undertrained.
+
+It still missed every criterion it missed before. Criterion 2 now fails only because `personal_story` slipped to 0.581 on seed 2024: the model overcorrected a little and called 4 story posts advice. Criterion 1 came within one post on seed 42 (0.633 vs 0.65) but stayed well short on the other two. Criteria 3 and 4 didn't move in a way that matters: `call_to_action` and `open_discussion` were still never predicted on any seed (3 test posts each), and seed 2024's most confident third was only 0.60 correct. Training longer can't fix a label with 11 training examples. That one needs more data, which is what diagnosis 3 said.
 
 <!-- If it didn't, say so. Relabelling that didn't help is a genuinely
      interesting result and earns full credit. -->
