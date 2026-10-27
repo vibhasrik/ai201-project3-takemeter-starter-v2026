@@ -316,7 +316,7 @@ A direction like that usually points at your labelling rather than the model.
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** **_ / 30 = _**%
+**Agreement rate:** **29 / 30 = 97**%
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
      stated rules beats a 95% who wrote "staff was right" nine times. Several
@@ -340,25 +340,17 @@ A direction like that usually points at your labelling rather than the model.
 
 **1.**
 
-> _The post:_
+> _The post:_ sp_014 — "Times are down about 3% since the shoe rules changed, so obviously the shoes are the whole story and the sport has a problem."
 >
-> _Staff said / I said:_
+> _Staff said / I said:_ Staff `hot_take` / I said `analysis`
 >
-> _My call, and why:_
+> _My call, and why:_ Staff is right, and so was my intended label: I meant `hot_take` and pasted the wrong label from the row above while working through the file. Under Rule 1 the 3% is decoration: "obviously" and "the whole story" are certainty the number can't support, and "the sport has a problem" is a conclusion it doesn't touch at all.
 >
-> _Which pile:_
-
-**2.**
-
-> _The post:_
->
-> _Staff said / I said:_
->
-> _My call, and why:_
->
-> _Which pile:_
+> _Which pile:_ (a), but as a clerical slip, not a misreading of the rule.
 
 **What the pattern in my disagreements tells me:**
+
+My only disagreement wasn't a misreading of the rules. It was a copy-paste slip. That's a way labels go wrong even when the definitions are clear, and I labelled my own 200 posts the same way. Some of my `labels.csv` rows could carry the same kind of error. A slip like that would look like inconsistent labelling when I diagnose the model's misses, so I should check a sample of the posts the model got wrong for mislabels before blaming the boundaries.
 
 ---
 
